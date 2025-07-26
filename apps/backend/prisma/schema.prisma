@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Player {
+  id String @id @default(uuid())
+  email String @unique
+  password String
+  dob: DateTime?
+  profilePhotoUrl String?
+  role PlayerRole?
+  battingStyle BattingStyle?
+  bowlingStyle BowlingStyle?
+  createdAt DateTime @default(now())
+  totalRuns Int @default(0)
+  totalWickets Int @default(0)
+  totalCatches Int @default(0)
+  totalMatches Int @default(0)
+  teams Team[]?
+  tournaments Tournament[]?
+}
+
+model Team {
+  id String @id @default(uuid())
+  name String
+  captain Player @relation(fields: [captainId], references [id])
+  captainId String
+  tournament Tournament? @relation(fields: [tournamentId], references [id])
+  tournamentId String
+  logoUrl String?
+  createdBy Player @relation(fields: [captain], references [id])
+  createdAt DateTime @default(now()) 
+}
+
+model Tournament {
+  id String @id @default(uuid())
+  name String
+  startDate DateTime @default(now()) 
+  endDate DateTime? 
+  status Status
+  createdAt DateTime @default(now()) 
+  createdBy Player @relation(fields: [createdById], references [id])
+  createdById String
+  location String?
+  matchType MatchType
+  ballType BallType
+  winnerTeam Team @relation(fields: [winnerTeamId], references [id])
+  winnerTeamId String
+  stats Stats @relation(fields: [statsId], references [id])
+  stats String
+  scorer Player @relation(fields: [scorer], references [id])
+  teams Teams[]
+}
+
+model Match {
+
+}
